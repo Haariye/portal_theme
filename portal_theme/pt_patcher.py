@@ -3526,3 +3526,27 @@ def rollback_15v4_desk_home():
 
     frappe.db.commit(); frappe.clear_cache()
     print("[done] Patch 15v4 rolled back.")
+
+
+# =====================================================
+# after_install hook — runs on `bench install-app portal_theme`
+# =====================================================
+def after_install():
+    """Auto-apply all working patches when the app is installed on a new site."""
+    print(">>> Portal Theme: applying all patches to new site...")
+    try:
+        apply_01_v2()
+        apply_05_fixes()
+        apply_07_sidebar_tight()
+        apply_09_footer_copyright_symbol()
+        apply_11_workspace_cards_v2()
+        apply_12_workspace_dark()
+        apply_13_checkboxes()
+        apply_14_check_tick()
+        frappe.db.commit()
+        frappe.clear_cache()
+        print(">>> Portal Theme: all patches applied.")
+    except Exception as e:
+        print(f">>> Portal Theme after_install error: {e}")
+        # Never break the install
+        pass

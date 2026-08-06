@@ -15,7 +15,7 @@
         <label class="form-label sr-only" for="login_email">{{ login_label or _("Email")}}</label>
         <div class="email-field">
             <input type="text" id="login_email" class="form-control"
-                placeholder="{% if login_name_placeholder %}{{ login_name_placeholder }}{% else %}{{ _('hariye@example.com') }}{% endif %}"
+                placeholder="{% if login_name_placeholder %}{{ login_name_placeholder }}{% else %}{{ _('jane@example.com') }}{% endif %}"
                 required autofocus autocomplete="username">
             <svg class="field-icon email-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2.5 7.65V15c0 .36.14.7.4.96.26.26.6.4.96.4h12.28c.36 0 .7-.14.96-.4.26-.26.4-.6.4-.96V7.65" stroke="#8A96A5" stroke-width="1.3" stroke-linecap="round"/>
@@ -337,31 +337,35 @@ footer.web-footer { display: none !important; }
         </div>
     </noscript>
 
-     <section class='for-login'>
+    <section class='for-login'>
         <div class="login-content page-card">
             {{ logo_section() }}
             <form class="form-signin form-login" role="form">
-                {{ email_login_body() }}
+                {%- if social_login or login_with_email_link -%}
+                    {{ email_login_body() }}
+                    <div class="social-logins text-center">
+                        {% if not disable_user_pass_login or (ldap_settings and ldap_settings.enabled) %}
+                        <p class="text-muted login-divider">{{ _("or") }}</p>{% endif %}
+                        <div class="social-login-buttons">
+                        {% for provider in provider_logins %}
+                            <div class="login-button-wrapper">
+                                <a href="{{ provider.auth_url }}" class="btn btn-block btn-default btn-sm btn-login-option btn-{{ provider.name }}">
+                                {% if provider.icon %}{{ provider.icon }}{% endif %}
+                                {{ _("Login with {0}").format(provider.provider_name) }}</a>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                {%- else -%}
+                    {{ email_login_body() }}
+                {%- endif -%}
             </form>
-            <div class="text-center sign-up-message">
-                <small>{{ _("© 2026 Dagaar, Inc. All rights reserved. Dagaar, Technology, Terms and conditions, subject to change without notice.") }}</small>
-                <br>
-               <a href="https://dagaar.com/" target="_blank" rel="noopener noreferrer">{{ _("Powered by DagaarTech®") }}</a>
-            </div>
-            <!-- Social Icons Section: inline SVGs, no external icon library required -->
-            <div class="brand-login-social">
-                <a href="#" aria-label="Facebook">{{ social_icon('facebook') }}</a>
-                <a href="#" aria-label="X / Twitter">{{ social_icon('twitter') }}</a>
-                <a href="#" aria-label="LinkedIn">{{ social_icon('linkedin') }}</a>
-                <a href="#" aria-label="Instagram">{{ social_icon('instagram') }}</a>
-            </div>
+            {{ brand_card_extras() }}
         </div>
         {%- if not disable_signup and not disable_user_pass_login -%}
-        <div class="text-center sign-up-message" style="margin-top: 10px;">
-            {{ _("Don't have an account?") }}
-            <a href="#signup">{{ _("Sign up") }}</a>
-        </div>
-        {%- endif -%}
+        <div class="text-center sign-up-message">
+            {{ _("Don't have an account?") }} <a href="#signup">{{ _("Sign up") }}</a>
+        </div>{%- endif -%}
     </section>
 
     {%- if social_login -%}
