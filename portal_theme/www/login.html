@@ -1,365 +1,438 @@
 {% extends "templates/web.html" %}
+{# Portal Theme login — Patch 05, based on user's v14 file, brand-integrated #}
+
+{% macro social_icon(name) -%}
+{% if name == 'facebook' %}<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.51 1.49-3.9 3.78-3.9 1.09 0 2.24.2 2.24.2v2.46H15.2c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/></svg>{% endif %}
+{% if name == 'twitter' %}<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25h6.83l4.713 6.231 5.447-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"/></svg>{% endif %}
+{% if name == 'linkedin' %}<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14Zm-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79ZM6.88 8.56A1.68 1.68 0 0 0 8.56 6.88 1.69 1.69 0 0 0 6.88 5.19 1.69 1.69 0 0 0 5.19 6.88c0 .93.76 1.68 1.69 1.68ZM8.27 18.5v-8.37H5.5v8.37h2.77Z"/></svg>{% endif %}
+{% if name == 'instagram' %}<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6Zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>{% endif %}
+{%- endmacro %}
 
 {% macro email_login_body() -%}
 {% if not disable_user_pass_login or (ldap_settings and ldap_settings.enabled) %}
 <div class="page-card-body">
-	<div class="form-group">
-		<label class="form-label sr-only" for="login_email">{{ login_label or _("Email")}}</label>
-		<div class="email-field">
-			<input type="text" id="login_email" class="form-control"
-				placeholder="{% if login_name_placeholder %}{{ login_name_placeholder  }}{% else %}{{ _('jane@example.com') }}{% endif %}"
-				required autofocus autocomplete="username">
-
-			<svg class="field-icon email-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
-				xmlns="http://www.w3.org/2000/svg">
-				<use class="es-lock" href="#es-line-email"></use>
-			</svg>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="form-label sr-only" for="login_password">{{ _("Password") }}</label>
-		<div class="password-field">
-			<input type="password" id="login_password" class="form-control" placeholder="•••••"
-				autocomplete="current-password" required>
-
-			<svg class="field-icon password-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
-				xmlns="http://www.w3.org/2000/svg">
-					<use class="es-lock" href="#es-line-lock"></use>
-			</svg>
-			<span toggle="#login_password" class="toggle-password text-muted">{{ _('Show') }}</span>
-		</div>
-	</div>
-
-	{% if not disable_user_pass_login %}
-	<p class="forgot-password-message">
-		<a href="#forgot">{{ _("Forgot Password?") }}</a>
-	</p>
-	{% endif %}
+    <div class="form-group">
+        <label class="form-label sr-only" for="login_email">{{ login_label or _("Email")}}</label>
+        <div class="email-field">
+            <input type="text" id="login_email" class="form-control"
+                placeholder="{% if login_name_placeholder %}{{ login_name_placeholder }}{% else %}{{ _('hariye@example.com') }}{% endif %}"
+                required autofocus autocomplete="username">
+            <svg class="field-icon email-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 7.65V15c0 .36.14.7.4.96.26.26.6.4.96.4h12.28c.36 0 .7-.14.96-.4.26-.26.4-.6.4-.96V7.65" stroke="#8A96A5" stroke-width="1.3" stroke-linecap="round"/>
+                <path d="M17.5 7.58V5.53c0-.36-.14-.7-.4-.96-.26-.26-.6-.4-.96-.4H3.86c-.36 0-.7.14-.96.4-.26.26-.4.6-.4.96v2.05L10 10.83l7.5-3.25Z" stroke="#8A96A5" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="form-label sr-only" for="login_password">{{ _("Password") }}</label>
+        <div class="password-field">
+            <input type="password" id="login_password" class="form-control" placeholder="•••••" autocomplete="current-password" required>
+            <svg class="field-icon password-icon" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.3 6.5h11.4c1.1 0 2 .9 2 2v7.5c0 1.1-.9 2-2 2H4.3c-1.1 0-2-.9-2-2V8.5c0-1.1.9-2 2-2Z" stroke="#8A96A5" stroke-width="1.3"/>
+                <path d="M6 6.5V6c0-2.2 1.8-4 4-4s4 1.8 4 4v.5" stroke="#8A96A5" stroke-width="1.3" stroke-linecap="round"/>
+                <circle cx="10" cy="12" r="1.3" fill="#8A96A5"/>
+            </svg>
+            <span toggle="#login_password" class="toggle-password text-muted">{{ _('Show') }}</span>
+        </div>
+    </div>
+    {% if not disable_user_pass_login %}
+    <p class="forgot-password-message"><a href="#forgot">{{ _("Forgot Password?") }}</a></p>
+    {% endif %}
 </div>
 {% endif %}
 <div class="page-card-actions">
-	{% if not disable_user_pass_login %}
-	<button class="btn btn-sm btn-primary btn-block btn-login" type="submit">
-		{{ _("Login") }}</button>
-	{% endif %}
-	{% if ldap_settings and ldap_settings.enabled %}
-	<button class="btn btn-sm {{ "btn-primary" if disable_user_pass_login else "btn-default" }} btn-block btn-login btn-ldap-login">
-		{{ _("Login with LDAP") }}</button>
-	{% endif %}
+    {% if not disable_user_pass_login %}
+    <button class="btn btn-sm btn-primary btn-block btn-login" type="submit">{{ _("Login") }}</button>
+    {% endif %}
+    {% if ldap_settings and ldap_settings.enabled %}
+    <button class="btn btn-sm btn-default btn-block btn-login btn-ldap-login">{{ _("Login with LDAP") }}</button>
+    {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro brand_card_extras() %}
+<div class="brand-login-extras">
+    {% if brand_login.terms_text %}
+    <div class="brand-login-terms">{{ brand_login.terms_text | safe }}</div>
+    {% endif %}
+    {% if brand_login.powered_by_text %}
+    <div class="brand-login-powered">
+        <a href="{{ brand_login.powered_by_url or '#' }}" target="_blank" rel="noopener">{{ brand_login.powered_by_text }}</a>
+    </div>
+    {% endif %}
+    {% if brand_login.show_social_icons and (brand_login.social.facebook or brand_login.social.twitter or brand_login.social.linkedin or brand_login.social.instagram) %}
+    <div class="brand-login-social">
+        {% if brand_login.social.facebook %}<a href="{{ brand_login.social.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">{{ social_icon('facebook') }}</a>{% endif %}
+        {% if brand_login.social.twitter %}<a href="{{ brand_login.social.twitter }}" target="_blank" rel="noopener" aria-label="Twitter">{{ social_icon('twitter') }}</a>{% endif %}
+        {% if brand_login.social.linkedin %}<a href="{{ brand_login.social.linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">{{ social_icon('linkedin') }}</a>{% endif %}
+        {% if brand_login.social.instagram %}<a href="{{ brand_login.social.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">{{ social_icon('instagram') }}</a>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro logo_section(title=null) %}
+<div class="page-card-head">
+    <img class="app-logo" src="{{ logo }}" alt="logo">
+    {% if title %}
+        <h4 class="brand-heading">{{ _(title) }}</h4>
+    {% else %}
+        <h4 class="brand-heading">{{ _('Login to {0}').format(app_name or _("Framework")) }}</h4>
+        {% if brand_login.subtitle %}
+        <div class="brand-subtitle">{{ brand_login.subtitle }}</div>
+        {% endif %}
+    {% endif %}
 </div>
 {% endmacro %}
 
 {% block head_include %}
+<title>{{ app_name or "Login" }}</title>
+<meta property="og:title" content="{{ app_name or 'Login' }}">
+{% if brand_login.og_description %}<meta property="og:description" content="{{ brand_login.og_description }}">{% endif %}
+<meta property="og:image" content="{{ logo }}">
 {{ include_style('login.bundle.css') }}
+{% set bl = brand_login %}
 <style>
-	body {
-		position: relative;
-		min-height: 100vh;
+:root {
+    --bl-nav-1:{{ bl.nav_bg1 }};  --bl-nav-2:{{ bl.nav_bg2 }};   --bl-nav-text:{{ bl.nav_text }};
+    --bl-foot-1:{{ bl.footer_bg1 }}; --bl-foot-2:{{ bl.footer_bg2 }}; --bl-foot-text:{{ bl.footer_text }};
+    --bl-card-bg:{{ bl.card_bg }};
+    --bl-card-radius:{{ bl.card_radius }}px;
+    --bl-card-max:{{ bl.card_max_width }}px;
+    --bl-card-op:{{ bl.card_opacity }};
+    --bl-btn-1:{{ bl.btn_bg1 }};  --bl-btn-2:{{ bl.btn_bg2 }};   --bl-btn-text:{{ bl.btn_text }};
+    --bl-underline:#C5A880;
+    --bl-underline-focus:{{ bl.btn_bg1 }};
+    --bl-input-text:#3A3428;
+    --bl-terms-text:#6B6455;
+    --bl-subtitle:#3A4658;
+    --bl-page-bg:#F5F5F0;
+}
+html, body { background: var(--bl-page-bg) !important; min-height:100vh; }
+body {
+    display:flex; flex-direction:column;
+    {% if apply_image_or_color == "Image" and background_image %}
+        background: url('{{ background_image }}') no-repeat center center fixed !important; background-size: cover !important;
+    {% elif apply_image_or_color == "Color" and background_color %}
+        background: {{ background_color }} !important;
+    {% elif apply_image_or_color == "Slider" and background_slider_images %}
+        background: url('{{ background_slider_images[0] }}') no-repeat center center fixed !important; background-size: cover !important;
+    {% endif %}
+}
+{% if (apply_image_or_color == "Image" and background_image) or apply_image_or_color == "Slider" %}
+body::before { content:""; position:fixed; inset:0; background:rgba(0,0,0,{{ background_opacity or 0.2 }}); z-index:0; }
+body > * { position: relative; z-index: 1; }
+{% endif %}
+.web-body-wrapper { min-height:100vh; display:flex; flex-direction:column; }
+.web-page-content, .page-content, .container { flex: 1 0 auto; }
 
-		{% if apply_image_or_color == "Image" and background_image %}
-			background: url('{{ background_image }}') no-repeat center center;
-			background-size: cover;
-		{% elif apply_image_or_color == "Color" and background_color %}
-			background: {{ background_color }};
-		{% elif apply_image_or_color == "Slider" and background_slider_images %}
-			background: url('{{ background_slider_images[0] }}') no-repeat center center;
-			background-size: cover;
-			transition: background-image {{ transition or 0.6 }}s ease-in-out;
-		{% endif %}
-	}
+/* ==== NAVBAR (brand diagonal) ==== */
+.navbar, header .navbar {
+    {% if bl.nav_use_diagonal %}
+    background: linear-gradient(105deg,
+        var(--bl-nav-1) 0%, var(--bl-nav-1) 55%,
+        var(--bl-nav-2) 60%, var(--bl-nav-2) 100%) !important;
+    {% else %}
+    background: var(--bl-nav-1) !important;
+    {% endif %}
+    border-bottom:0 !important; box-shadow:0 4px 14px rgba(23,48,77,0.10) !important;
+    min-height:64px !important; padding:0 26px !important; position:relative;
+}
+.navbar-brand, .navbar .navbar-brand { color: var(--bl-nav-text) !important; padding: 8px 0 !important; }
+.navbar-brand img, .navbar .app-logo { max-height: 40px !important; width: auto !important; }
+.navbar::after {
+    content: "{{ bl.nav_right_text }}";
+    position: absolute; right: 36px; top: 50%; transform: translateY(-50%);
+    color: var(--bl-nav-text); font-weight: 600; font-size: 17px; letter-spacing: 0.02em;
+    pointer-events: none;
+}
+.navbar .navbar-nav, .navbar .navbar-collapse .navbar-nav { display: none !important; }
 
-	{% if apply_image_or_color == "Image" and background_image or apply_image_or_color == "Slider"  %}
-	body::before {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background: rgba(0, 0, 0, {{ background_opacity or 0.2 }});
-		z-index: 0;
-	}
-	{% endif %}
+/* ==== LOGIN CARD — compact v14 style ==== */
+.for-login .page-card, .for-forgot .page-card, .for-login-with-email-link .page-card,
+.for-signup .page-card, .for-email-login .page-card {
+    background: var(--bl-card-bg) !important;
+    border-radius: var(--bl-card-radius) !important;
+    border: 0 !important;
+    max-width: var(--bl-card-max) !important;
+    width: 90% !important;
+    padding: 26px 26px 20px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.10) !important;
+    opacity: var(--bl-card-op);
+    text-align: center;
+    {% if position_of_login_card == 1 %}margin: 40px auto 40px 5vw !important;
+    {% elif position_of_login_card == 2 %}margin: 40px 5vw 40px auto !important;
+    {% else %}margin: 40px auto !important;{% endif %}
+}
+.for-login section, .for-forgot section, .for-email-login section,
+.for-signup section, .for-login-with-email-link section { padding: 0 !important; }
 
-	body > * {
-		position: relative;
-		z-index: 1;
-	}
+/* Header */
+.page-card-head { padding: 0 0 18px !important; text-align: center !important; border-bottom: 0 !important; }
+.page-card-head img.app-logo {
+    display: block; margin: 0 auto 8px;
+    max-height: 44px; width: auto;
+}
+.page-card-head .brand-heading {
+    color: var(--bl-nav-2) !important;
+    font-size: 15px !important; font-weight: 700 !important;
+    margin: 0 0 3px !important; letter-spacing: 0.01em;
+}
+.page-card-head .brand-subtitle {
+    color: var(--bl-subtitle);
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin: 2px 0 0;
+}
 
-	.page-card-head h4 {
-		margin-top: 1rem;
-		font-size: var(--text-xl);
-		font-weight: var(--weight-semibold);
-		letter-spacing: 0.01em;
-		color: {{ text_color or 'var(--text-color)' }};
-	}
+/* Inputs — border-bottom underline (v14 style) */
+.for-login .form-control, .for-forgot .form-control,
+.for-login-with-email-link .form-control, .for-signup .form-control {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1.5px solid var(--bl-underline) !important;
+    border-radius: 0 !important;
+    padding: 8px 8px 8px 26px !important;
+    font-size: 14px !important;
+    color: var(--bl-input-text) !important;
+    box-shadow: none !important;
+    height: auto !important;
+    line-height: 1.5 !important;
+    text-align: left;
+}
+.for-login .form-control:focus, .for-forgot .form-control:focus {
+    border-bottom-color: var(--bl-underline-focus) !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    background: transparent !important;
+}
+.for-login .form-control::placeholder { color: #8A96A5; opacity: 0.7; }
+.form-group { margin-bottom: 6px !important; }
+.email-field, .password-field { position: relative; }
+.email-field .field-icon, .password-field .field-icon {
+    position: absolute; left: 2px; top: 50%; transform: translateY(-50%);
+    color: #8A96A5;
+}
+.password-field .toggle-password {
+    position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; cursor: pointer; color: #8A96A5;
+}
+.forgot-password-message {
+    text-align: right; font-size: 12px; margin: 6px 2px 12px !important;
+}
+.forgot-password-message a { color: #8A96A5; text-decoration: none; }
+.forgot-password-message a:hover { color: var(--bl-nav-2); }
 
-	/* --- login card alignment --- */
-	.for-login .page-card, 
-	.for-forgot .page-card, 
-	.for-login-with-email-link .page-card, 
-	.for-signup .page-card, 
-	.for-email-login .page-card {
-		padding: 45px 10px;
-		background-color: #fff;
-		max-width: 400px;
-		border-radius: var(--border-radius-md);
-		border: 1px solid var(--border-color);
-		background-color: rgba(255, 255, 255, {{ opacity_of_login_card or 1 }});
+/* Login button — brand green/navy split, compact */
+.btn-login, .btn.btn-primary.btn-login {
+    {% if bl.btn_use_diagonal %}
+    background: linear-gradient(90deg,
+        var(--bl-btn-1) 0%, var(--bl-btn-1) 60%,
+        var(--bl-btn-2) 60%, var(--bl-btn-2) 100%) !important;
+    {% else %}
+    background: var(--bl-btn-1) !important;
+    {% endif %}
+    color: var(--bl-btn-text) !important;
+    border: 0 !important;
+    border-radius: 30px !important;
+    padding: 10px 20px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 12px rgba(23,48,77,0.15) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(23,48,77,0.22) !important; }
 
-		{% if position_of_login_card == 1 %}
-			margin: 0 auto 0 0;   /* left */
-		{% elif position_of_login_card == 2 %}
-			margin: 0 0 0 auto;   /* right */
-		{% else %}
-			margin: 0 auto;       /* center (default) */
-		{% endif %}
-	}
+/* Extras inside card */
+.brand-login-extras { padding-top: 14px; margin-top: 14px; border-top: 1px solid rgba(0,0,0,0.05); }
+.brand-login-terms {
+    text-align:center; color:var(--bl-terms-text);
+    font-size:11.5px; line-height:1.5;
+    padding:0 4px 8px; font-weight: 400;
+}
+.brand-login-terms a { color: var(--bl-terms-text); text-decoration: underline; }
+.brand-login-powered { text-align:center; margin: 4px 0 8px; }
+.brand-login-powered a { color:#2F80ED; font-weight:600; font-size:12.5px; text-decoration:none; }
+.brand-login-powered a:hover { text-decoration: underline; }
+.brand-login-social {
+    display:flex; justify-content:center; gap:14px;
+    color:#A17B47; padding-top:4px;
+}
+.brand-login-social a {
+    color:#A17B47; transition: transform 0.15s, color 0.15s;
+    display:inline-flex; align-items:center; justify-content:center;
+    width: 26px; height: 26px;
+}
+.brand-login-social a:hover { color: var(--bl-nav-2); transform: translateY(-2px); }
 
-	.page-card-head {
-		font-size: var(--text-xl);
-		font-weight: 600;
+.sign-up-message { color: #5A6B80; margin-top: 12px; font-size: 12.5px; }
+.sign-up-message a { color: var(--bl-nav-2); font-weight: 600; }
+.social-logins .btn { border-radius: 999px !important; height: 40px; }
+.login-divider { color: #A0A8B5; margin: 10px 0 8px; font-size: 12px; }
 
-		{% if position_of_login_card == 1 %}
-			padding: max(5vh, 30px) 837px 14px 0px;
-		{% elif position_of_login_card == 2 %}
-			padding: max(5vh, 30px) 0 14px 837px;
-		{% else %}
-			padding: max(5vh, 30px) 0 14px 0px;
-		{% endif %}
-	}
+/* Footer strip */
+footer.web-footer { display: none !important; }
+{% if completely_hide_footer_from_login_page %}.brand-login-footer { display: none !important; }{% endif %}
+.brand-login-footer {
+    {% if bl.footer_use_diagonal %}
+    background: linear-gradient(105deg,
+        var(--bl-foot-1) 0%, var(--bl-foot-1) 55%,
+        var(--bl-foot-2) 60%, var(--bl-foot-2) 100%) !important;
+    {% else %}
+    background: var(--bl-foot-1) !important;
+    {% endif %}
+    color: var(--bl-foot-text);
+    min-height: 60px; padding: 18px 28px; margin-top: auto;
+    display: flex; align-items: center; font-weight: 500;
+    font-size: 13px;
+}
 
-	{% if completely_hide_footer_from_login_page %}
-	footer.web-footer {
-		display: none !important;
-	}
-	{% endif %}
-
-    .navbar {
-        {% if login_navbar %}
-            background-color: {{ login_navbar }} !important;
-        {% endif %}
+/* Responsive */
+@media (max-width: 992px) {
+    .navbar { min-height: 54px !important; padding: 0 16px !important; }
+    .navbar-brand img, .navbar .app-logo { max-height: 32px !important; }
+    .navbar::after { font-size: 15px; right: 18px; }
+    .for-login .page-card, .for-forgot .page-card, .for-email-login .page-card {
+        max-width: 92% !important; margin: 26px auto !important; padding: 24px 22px 18px !important;
     }
-	.navbar a, .navbar .nav-link {
-		{% if login_navbar_text %}
-			color: {{ login_navbar_text }} !important;
-		{% endif %}
-	}
+    .brand-login-footer { padding: 14px 18px; font-size: 12px; min-height: 52px; }
+}
+@media (max-width: 576px) {
+    .navbar { min-height: 48px !important; padding: 0 12px !important; }
+    .navbar-brand img, .navbar .app-logo { max-height: 28px !important; }
+    .navbar::after { font-size: 13px; right: 12px; letter-spacing: 0; }
+    .for-login .page-card, .for-forgot .page-card, .for-email-login .page-card {
+        max-width: calc(100vw - 20px) !important;
+        margin: 16px 10px !important;
+        padding: 20px 16px 16px !important;
+        border-radius: 12px !important;
+    }
+    .page-card-head img.app-logo { max-height: 38px; margin-bottom: 6px; }
+    .page-card-head .brand-heading { font-size: 14px !important; }
+    .page-card-head .brand-subtitle { font-size: 10px; }
+    .for-login .form-control { font-size: 13px !important; padding: 7px 8px 7px 24px !important; }
+    .btn-login { padding: 9px 18px !important; font-size: 13px !important; }
+    .brand-login-terms { font-size: 11px; }
+    .brand-login-powered a { font-size: 12px; }
+    .brand-login-social { gap: 12px; }
+    .brand-login-footer { padding: 12px 12px; font-size: 11.5px; min-height: 46px; text-align: center; justify-content: center; }
+}
 </style>
 {% endblock %}
 
 {% block footer %}
-{% if not completely_hide_footer_from_login_page %}
-	{{ super() }}
-{% endif %}
+<footer class="brand-login-footer">
+    <div class="copyright-text">{{ brand_login.copyright_text or "" }}</div>
+</footer>
 {% endblock %}
 
-
-{% macro logo_section(title=null) %}
-<div class="page-card-head">
-	<img class="app-logo" src="{{ logo }}">
-	{% if title %}
-	<h4>{{ _(title)}}</h4>
-	{% else %}
-	<h4>{{ _('Login to {0}').format(app_name or _("Frappe")) }}</h4>
-	{% endif %}
-</div>
-{% endmacro %}
-
 {% block page_content %}
-<!-- {{ for_test }} -->
 <div>
-	<noscript>
-		<div class="text-center my-5">
-			<h4>{{ _("Javascript is disabled on your browser") }}</h4>
-			<p class="text-muted">
-				{{ _("You need to enable JavaScript for your app to work.") }}<br>{{ _("To enable it follow the instructions in the following link: {0}").format("<a href='https://enable-javascript.com/'>enable-javascript.com</a></p>") }}
-		</div>
-	</noscript>
-	<section class='for-login'>
-		{{ logo_section() }}
-		<div class="login-content page-card">
-			<form class="form-signin form-login" role="form">
-				{%- if social_login or login_with_email_link -%}
-				<div class="page-card-body">
-					<form class="form-signin form-login" role="form">
-						{{ email_login_body() }}
-					</form>
-					<div class="social-logins text-center">
-						{% if not disable_user_pass_login or (ldap_settings and ldap_settings.enabled) %}
-						<p class="text-muted login-divider">{{ _("or") }}</p>
-						{% endif %}
-						<div class="social-login-buttons">
-							{% for provider in provider_logins %}
-							<div class="login-button-wrapper">
-								<a href="{{ provider.auth_url }}"
-									class="btn btn-block btn-default btn-sm btn-login-option btn-{{ provider.name }}">
-									{% if provider.icon %}
-										{{ provider.icon }}
-									{% endif %}
-									{{ _("Login with {0}").format(provider.provider_name) }}</a>
-							</div>
-							{% endfor %}
-						</div>
+    <noscript>
+        <div class="text-center my-5">
+            <h4>{{ _("Javascript is disabled on your browser") }}</h4>
+            <p class="text-muted">{{ _("You need to enable JavaScript for your app to work.") }}</p>
+        </div>
+    </noscript>
 
-						{% if login_with_frappe_cloud_url %}
-						<div class="social-login-buttons">
-							<div class="login-button-wrapper">
-								<a href="{{ login_with_frappe_cloud_url }}"
-									class="btn btn-block btn-default btn-sm btn-login-option btn-login-with-frappe-cloud">
-									<svg class="mr-2" width="24" height="20" viewBox="0 5 23 23" fill="none"
-										xmlns="http://www.w3.org/2000/svg">
-										<path
-											d="M24.5011 14.1124C23.3954 12.4873 21.532 11.5477 19.594 11.6747C18.7616 10.1384 17.2211 9.12267 15.4198 9.0084C14.1651 8.93222 12.8979 9.3766 11.9165 10.24C11.2456 10.8367 10.7611 11.5223 10.463 12.2968C10.289 12.7539 9.89151 13.0459 9.46912 13.0459H6.5V15.5852H9.46912C10.9226 15.5852 12.2271 14.6584 12.7737 13.2237C12.9227 12.8301 13.1712 12.4873 13.5439 12.1571C14.0284 11.7255 14.662 11.4969 15.2583 11.535C16.1528 11.5985 16.7863 12.0175 17.1839 12.538C17.6063 13.0205 17.8423 13.7696 17.979 14.5187C18.774 14.2902 19.6437 14.0997 20.476 14.2394C21.1593 14.3536 21.7929 14.7218 22.2525 15.2678C22.327 15.3567 22.4016 15.4456 22.4637 15.5471C23.06 16.4232 23.1718 17.5024 22.7743 18.5689C22.414 19.5592 21.0847 20.4607 19.9791 20.4607H11.3326C10.1524 20.4607 9.18339 19.5592 9.03432 18.4038H6.54969C6.71119 20.9686 8.78585 23 11.3326 23H19.9915C22.1283 23 24.3769 21.451 25.1098 19.4704C25.7931 17.6167 25.5695 15.6614 24.5135 14.0997L24.5011 14.1124Z"
-											fill="currentColor" />
-									</svg>
-									{{ _("Login with Frappe Cloud") }}</a>
-							</div>
-						</div>
-						{% endif %}
+     <section class='for-login'>
+        <div class="login-content page-card">
+            {{ logo_section() }}
+            <form class="form-signin form-login" role="form">
+                {{ email_login_body() }}
+            </form>
+            <div class="text-center sign-up-message">
+                <small>{{ _("© 2026 Dagaar, Inc. All rights reserved. Dagaar, Technology, Terms and conditions, subject to change without notice.") }}</small>
+                <br>
+               <a href="https://dagaar.com/" target="_blank" rel="noopener noreferrer">{{ _("Powered by DagaarTech®") }}</a>
+            </div>
+            <!-- Social Icons Section: inline SVGs, no external icon library required -->
+            <div class="brand-login-social">
+                <a href="#" aria-label="Facebook">{{ social_icon('facebook') }}</a>
+                <a href="#" aria-label="X / Twitter">{{ social_icon('twitter') }}</a>
+                <a href="#" aria-label="LinkedIn">{{ social_icon('linkedin') }}</a>
+                <a href="#" aria-label="Instagram">{{ social_icon('instagram') }}</a>
+            </div>
+        </div>
+        {%- if not disable_signup and not disable_user_pass_login -%}
+        <div class="text-center sign-up-message" style="margin-top: 10px;">
+            {{ _("Don't have an account?") }}
+            <a href="#signup">{{ _("Sign up") }}</a>
+        </div>
+        {%- endif -%}
+    </section>
 
-						{% if login_with_email_link %}
-						<div class="login-with-email-link social-login-buttons">
-							<div class="login-button-wrapper">
-								<a href="#login-with-email-link"
-									class="btn btn-block btn-default btn-sm btn-login-option btn-login-with-email-link">
-									{{ _("Login with Email Link") }}</a>
-							</div>
-						</div>
-						{% endif %}
-					</div>
-				</div>
-				{% else %}
-					{{ email_login_body() }}
-				{%- endif -%}
-			</form>
-		</div>
-		{%- if not disable_signup and not disable_user_pass_login -%}
-		<div class="text-center sign-up-message">
-			{{ _("Don't have an account?") }}
-			<a href="#signup">{{ _("Sign up") }}</a>
-		</div>
-		{%- endif -%}
-	</section>
+    {%- if social_login -%}
+    <section class='for-email-login'>
+        <div class="login-content page-card">
+            {{ logo_section() }}
+            <form class="form-signin form-login" role="form">{{ email_login_body() }}</form>
+            {{ brand_card_extras() }}
+        </div>
+    </section>{%- endif -%}
 
-	{%- if social_login -%}
-	<section class='for-email-login'>
-		{{ logo_section() }}
-		<div class="login-content page-card">
-			<form class="form-signin form-login" role="form">
-			{{ email_login_body() }}
-			</form>
-		</div>
-		{%- if not disable_signup and not disable_user_pass_login -%}
-		<div class="text-center sign-up-message">
-			{{ _("Don't have an account?") }}
-			<a href="#signup">{{ _("Sign up") }}</a>
-		</div>
-		{%- endif -%}
-	</section>
-	{%- endif -%}
-	<section class='for-signup {{ "signup-disabled" if disable_signup else "" }}'>
-		{{ logo_section(_('Create a {0} Account').format(app_name or _("Frappe"))) }}
-		<div class="login-content page-card">
-			{%- if not disable_signup -%}
-			{{ signup_form_template }}
-			{%- else -%}
-			<div class='page-card-head mb-2'>
-				<span class='indicator gray'>{{_("Signup Disabled")}}</span>
-				<p class="text-muted text-normal sign-up-message mt-1 mb-8">{{_("Signups have been disabled for this website.")}}</p>
-				<div><a href='/' class='btn btn-primary btn-md'>{{ _("Home") }}</a></div>
-			</div>
-			{%- endif -%}
-		</div>
+    <section class='for-signup {{ "signup-disabled" if disable_signup else "" }}'>
+        <div class="login-content page-card">
+            {{ logo_section(_('Create a {0} Account').format(app_name or _("Framework"))) }}
+            {%- if not disable_signup -%}{{ signup_form_template }}
+            {%- else -%}
+            <div class='page-card-head mb-2'>
+                <span class='indicator gray'>{{ _("Signup Disabled") }}</span>
+                <p class="text-muted text-normal sign-up-message mt-1 mb-8">{{ _("Signups have been disabled for this website.") }}</p>
+                <div><a href='/' class='btn btn-primary btn-md'>{{ _("Home") }}</a></div>
+            </div>{%- endif -%}
+        </div>
+    </section>
 
-	</section>
+    <section class='for-forgot'>
+        <div class="login-content page-card">
+            {{ logo_section('Forgot Password') }}
+            <form class="form-signin form-forgot hide" role="form">
+                <div class="page-card-body">
+                    <div class="email-field">
+                        <input type="email" id="forgot_email" class="form-control" placeholder="{{ _('Email Address') }}" required autofocus autocomplete="username">
+                    </div>
+                </div>
+                <div class="page-card-actions">
+                    <button class="btn btn-sm btn-primary btn-block btn-forgot btn-login" type="submit">{{ _("Reset Password") }}</button>
+                    <p class="text-center sign-up-message"><a href="#login">{{ _("Back to Login") }}</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
 
-	<section class='for-forgot'>
-		{{ logo_section('Forgot Password') }}
-		<div class="login-content page-card">
-			<form class="form-signin form-forgot hide" role="form">
-				<div class="page-card-body">
-					<div class="email-field">
-						<input type="email" id="forgot_email" class="form-control"
-							placeholder="{{ _('Email Address') }}" required autofocus autocomplete="username">
-						<svg class="field-icon email-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
-							xmlns="http://www.w3.org/2000/svg">
-							<path
-								d="M2.5 7.65149V15.0757C2.5 15.4374 2.64367 15.7842 2.8994 16.04C3.15513 16.2957 3.50198 16.4394 3.86364 16.4394H16.1364C16.498 16.4394 16.8449 16.2957 17.1006 16.04C17.3563 15.7842 17.5 15.4374 17.5 15.0757V7.65149"
-								stroke="#74808B" stroke-miterlimit="10" stroke-linecap="square" />
-							<path
-								d="M17.5 7.57572V5.53026C17.5 5.1686 17.3563 4.82176 17.1006 4.56603C16.8449 4.31029 16.498 4.16663 16.1364 4.16663H3.86364C3.50198 4.16663 3.15513 4.31029 2.8994 4.56603C2.64367 4.82176 2.5 5.1686 2.5 5.53026V7.57572L10 10.8333L17.5 7.57572Z"
-								stroke="#74808B" stroke-miterlimit="10" stroke-linecap="square" />
-						</svg>
-
-					</div>
-				</div>
-				<div class="page-card-actions">
-					<button class="btn btn-sm btn-primary btn-block btn-forgot"
-						type="submit">{{ _("Reset Password") }}</button>
-					<p class="text-center sign-up-message">
-						<a href="#login">{{ _("Back to Login") }}</a>
-					</p>
-				</div>
-
-			</form>
-		</div>
-	</section>
-	
-	<section class='for-login-with-email-link'>
-			{{ logo_section(_('Login with Email Link')) }}
-		<div class="login-content page-card">
-			<form class="form-signin form-login-with-email-link hide" role="form">
-				<div class="page-card-body">
-					<div class="email-field">
-						<input type="email" id="login_with_email_link_email" class="form-control"
-							placeholder="{{ _('Email Address') }}" required autofocus autocomplete="username">
-						<svg class="field-icon email-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
-							xmlns="http://www.w3.org/2000/svg">
-							<path
-								d="M2.5 7.65149V15.0757C2.5 15.4374 2.64367 15.7842 2.8994 16.04C3.15513 16.2957 3.50198 16.4394 3.86364 16.4394H16.1364C16.498 16.4394 16.8449 16.2957 17.1006 16.04C17.3563 15.7842 17.5 15.4374 17.5 15.0757V7.65149"
-								stroke="#74808B" stroke-miterlimit="10" stroke-linecap="square" />
-							<path
-								d="M17.5 7.57572V5.53026C17.5 5.1686 17.3563 4.82176 17.1006 4.56603C16.8449 4.31029 16.498 4.16663 16.1364 4.16663H3.86364C3.50198 4.16663 3.15513 4.31029 2.8994 4.56603C2.64367 4.82176 2.5 5.1686 2.5 5.53026V7.57572L10 10.8333L17.5 7.57572Z"
-								stroke="#74808B" stroke-miterlimit="10" stroke-linecap="square" />
-						</svg>
-					</div>
-				</div>
-				<div class="page-card-actions">
-					<button class="btn btn-sm btn-primary btn-block btn-login-with-email-link"
-						type="submit">{{ _("Send login link") }}</button>
-					<p class="text-center sign-up-message">
-						<a href="#login">{{ _("Back to Login") }}</a>
-					</p>
-				</div>
-			</form>
-		</div>
-	</section>
+    <section class='for-login-with-email-link'>
+        <div class="login-content page-card">
+            {{ logo_section(_('Login with Email Link')) }}
+            <form class="form-signin form-login-with-email-link hide" role="form">
+                <div class="page-card-body">
+                    <div class="email-field">
+                        <input type="email" id="login_with_email_link_email" class="form-control" placeholder="{{ _('Email Address') }}" required autofocus autocomplete="username">
+                    </div>
+                </div>
+                <div class="page-card-actions">
+                    <button class="btn btn-sm btn-primary btn-block btn-login-with-email-link btn-login" type="submit">{{ _("Send login link") }}</button>
+                    <p class="text-center sign-up-message"><a href="#login">{{ _("Back to Login") }}</a></p>
+                </div>
+            </form>
+        </div>
+    </section>
 </div>
 {% endblock %}
 
 {% block script %}
 <script>{% include "templates/includes/login/login.js" %}</script>
-
 {% if apply_image_or_color == "Slider" and background_slider_images %}
 <script>
-	document.addEventListener("DOMContentLoaded", function () {
-		let images = {{ background_slider_images | tojson }};
-		let index = 0;
-		let body = document.querySelector("body");
-
-		let interval = ({{ interval or 5 }}) * 1000; 
-		let transition = {{ transition or 0.6 }} * 1000; 
-
-		if (images.length > 1) {
-			setInterval(() => {
-				index = (index + 1) % images.length;
-				body.style.backgroundImage = `url('${images[index]}')`;
-			}, interval + transition); 
-		}
-	});
-</script>
-{% endif %}
-
+document.addEventListener("DOMContentLoaded", function () {
+    let images = {{ background_slider_images | tojson }};
+    let index = 0; let body = document.querySelector("body");
+    let interval = ({{ interval or 5 }}) * 1000; let transition = {{ transition or 0.6 }} * 1000;
+    if (images.length > 1) setInterval(() => { index=(index+1)%images.length; body.style.backgroundImage=`url('${images[index]}')`; }, interval + transition);
+});
+</script>{% endif %}
 {% endblock %}
-
 
 {% block sidebar %}{% endblock %}
