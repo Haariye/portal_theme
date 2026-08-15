@@ -3550,3 +3550,914 @@ def after_install():
         print(f">>> Portal Theme after_install error: {e}")
         # Never break the install
         pass
+
+
+# =====================================================
+# PATCH 16 — Submitted checkbox visibility + dark-mode
+#             page-head buttons + dark-mode field backgrounds
+# =====================================================
+DARK16_BEGIN = "/* PT-PATCH:16-dark-fixes BEGIN */"
+DARK16_END   = "/* PT-PATCH:16-dark-fixes END */"
+
+DARK16_CSS = DARK16_BEGIN + """
+/* ============ Submitted / disabled checkbox — stay clearly checked ============ */
+input[type="checkbox"]:disabled:checked,
+input[type="checkbox"][readonly]:checked,
+input[type="checkbox"].disabled:checked {
+    background-color: #3ECF57 !important;
+    border-color: #3ECF57 !important;
+    opacity: 0.85 !important;
+    cursor: not-allowed;
+}
+input[type="checkbox"]:disabled:checked::after,
+input[type="checkbox"][readonly]:checked::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 4px !important;
+    top: 0px !important;
+    width: 5px !important;
+    height: 10px !important;
+    border: solid #FFFFFF !important;
+    border-width: 0 2.5px 2.5px 0 !important;
+    transform: rotate(45deg) !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    pointer-events: none;
+}
+
+/* Disabled+unchecked stays clearly empty */
+input[type="checkbox"]:disabled:not(:checked) {
+    background: #EEF2F7 !important;
+    border-color: #C7D0DB !important;
+    opacity: 0.75;
+}
+:root[data-theme="dark"] input[type="checkbox"]:disabled:not(:checked) {
+    background: #253753 !important;
+    border-color: #3A4558 !important;
+}
+
+/* ============ Dark mode: page-head top-right buttons visible ============ */
+:root[data-theme="dark"] .page-head .btn,
+:root[data-theme="dark"] .page-head .custom-actions .btn,
+:root[data-theme="dark"] .page-head .standard-actions .btn:not(.btn-primary),
+:root[data-theme="dark"] .page-head .page-actions .btn:not(.btn-primary),
+:root[data-theme="dark"] .page-head .menu-btn-group .btn,
+:root[data-theme="dark"] .page-head .btn.btn-default,
+:root[data-theme="dark"] .page-head .btn-secondary,
+:root[data-theme="dark"] .page-head .dropdown-toggle,
+:root[data-theme="dark"] .page-head .btn-actions,
+:root[data-theme="dark"] .page-head .btn-actions-menu,
+:root[data-theme="dark"] .page-head .icon-btn,
+:root[data-theme="dark"] .page-head .btn-icon {
+    background: rgba(255,255,255,0.16) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255,255,255,0.24) !important;
+    box-shadow: none !important;
+}
+:root[data-theme="dark"] .page-head .btn:hover,
+:root[data-theme="dark"] .page-head .btn-actions:hover,
+:root[data-theme="dark"] .page-head .dropdown-toggle:hover,
+:root[data-theme="dark"] .page-head .icon-btn:hover {
+    background: rgba(255,255,255,0.26) !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255,255,255,0.34) !important;
+}
+
+/* Icons inside those buttons — force white */
+:root[data-theme="dark"] .page-head .btn svg,
+:root[data-theme="dark"] .page-head .btn i,
+:root[data-theme="dark"] .page-head .icon-btn svg,
+:root[data-theme="dark"] .page-head .btn-icon svg,
+:root[data-theme="dark"] .page-head .dropdown-toggle svg,
+:root[data-theme="dark"] .page-head .btn-actions svg {
+    fill: #FFFFFF !important;
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+    opacity: 1 !important;
+}
+:root[data-theme="dark"] .page-head .btn svg path,
+:root[data-theme="dark"] .page-head .icon-btn svg path,
+:root[data-theme="dark"] .page-head .btn svg use {
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+/* Primary "Save" / "+ Add …" button stays green — don't touch */
+:root[data-theme="dark"] .page-head .primary-action,
+:root[data-theme="dark"] .page-head .btn.btn-primary,
+:root[data-theme="dark"] .page-head .standard-actions .btn-primary {
+    background: #3ECF57 !important;
+    color: #17304D !important;
+    border: 0 !important;
+}
+
+/* ============ Dark mode: form fields (fix white-bg regression) ============ */
+:root[data-theme="dark"] .form-control:not([type="checkbox"]):not([type="radio"]),
+:root[data-theme="dark"] input.form-control,
+:root[data-theme="dark"] select.form-control,
+:root[data-theme="dark"] textarea.form-control,
+:root[data-theme="dark"] .input-with-feedback,
+:root[data-theme="dark"] .awesomplete input,
+:root[data-theme="dark"] .link-field input,
+:root[data-theme="dark"] .autocomplete input,
+:root[data-theme="dark"] .control-input input,
+:root[data-theme="dark"] .frappe-control input.form-control {
+    background: #1E2A3E !important;
+    color: #E6EAF0 !important;
+    border-color: #3A4558 !important;
+}
+:root[data-theme="dark"] .form-control::placeholder,
+:root[data-theme="dark"] input::placeholder {
+    color: #8A96A5 !important;
+    opacity: 1 !important;
+}
+:root[data-theme="dark"] .form-control[readonly],
+:root[data-theme="dark"] .form-control:disabled,
+:root[data-theme="dark"] .like-disabled-input {
+    background: #253753 !important;
+    color: #A0AAB6 !important;
+    border-color: #3A4558 !important;
+}
+
+/* Link field "+" buttons */
+:root[data-theme="dark"] .input-group-btn .btn,
+:root[data-theme="dark"] .link-btn,
+:root[data-theme="dark"] .field-area .btn {
+    background: #253753 !important;
+    color: #E6EAF0 !important;
+    border-color: #3A4558 !important;
+}
+""" + DARK16_END + "\n"
+
+
+def apply_16_dark_fixes():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(f">>> ERROR: Theme Template '{TEMPLATE}' not found."); return
+    _timestamp_backup_css("before_16_dark_fixes")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(
+        re.escape(DARK16_BEGIN) + r".*?" + re.escape(DARK16_END) + r"\n?",
+        "", current, flags=re.DOTALL,
+    ).rstrip()
+    new_css = current + "\n\n" + DARK16_CSS
+    _save_css(new_css)
+    print("[done] Patch 16 applied. Hard-refresh (Ctrl+Shift+R).")
+
+
+def rollback_16_dark_fixes():
+    _timestamp_backup_css("before_ROLLBACK_16_dark_fixes")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    new_css = re.sub(
+        re.escape(DARK16_BEGIN) + r".*?" + re.escape(DARK16_END) + r"\n?",
+        "", current, flags=re.DOTALL,
+    ).rstrip() + "\n"
+    _save_css(new_css)
+    print("[done] Patch 16 rolled back.")
+
+
+def emergency_cleanup_today():
+    """Strip all Patch 15 and Patch 16 blocks from CSS.
+       Leaves 01v2, 02, 05, 07, 09, 11, 12, 13, 14 untouched."""
+    _timestamp_backup_css("before_emergency_cleanup")
+    css = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    for tag in ["15-desk-home", "15v2-desk-home", "15v3-desk-home", "15v4-desk-home", "16-dark-fixes"]:
+        css = re.sub(
+            r"/\* PT-PATCH:" + re.escape(tag) + r" BEGIN \*/.*?/\* PT-PATCH:" + re.escape(tag) + r" END \*/\n?",
+            "", css, flags=re.DOTALL,
+        )
+    _save_css(css.rstrip() + "\n")
+    print("[done] Today's patches stripped. Refresh with cache disabled.")
+
+
+# =====================================================
+# PATCH 14 — Checkbox: use ::after checkmark (SVG bg was failing)
+# =====================================================
+CB14_BEGIN = "/* PT-PATCH:14-check-tick BEGIN */"
+CB14_END   = "/* PT-PATCH:14-check-tick END */"
+
+CB14_CSS = CB14_BEGIN + """
+/* Kill the SVG background from Patch 13 (it was rendering as a solid fill
+   because the escaped SVG data URL didn't decode reliably in Frappe's
+   context). Draw the tick with a rotated ::after pseudo instead. */
+
+input[type="checkbox"] {
+    position: relative !important;
+    background-image: none !important;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #3ECF57 !important;
+    border-color: #3ECF57 !important;
+    background-image: none !important;
+}
+
+/* The checkmark itself — two-line CSS shape, rotated */
+input[type="checkbox"]:checked::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 4px !important;
+    top: 0px !important;
+    width: 5px !important;
+    height: 10px !important;
+    border: solid #FFFFFF !important;
+    border-width: 0 2.5px 2.5px 0 !important;
+    transform: rotate(45deg) !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    pointer-events: none;
+}
+
+/* Indeterminate — horizontal white bar */
+input[type="checkbox"]:indeterminate {
+    background-color: #3ECF57 !important;
+    border-color: #3ECF57 !important;
+    background-image: none !important;
+}
+input[type="checkbox"]:indeterminate::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 3px !important;
+    top: 6px !important;
+    width: 8px !important;
+    height: 2.5px !important;
+    background: #FFFFFF !important;
+    border: 0 !important;
+    transform: none !important;
+    border-radius: 1px;
+    display: block !important;
+    pointer-events: none;
+}
+
+/* Make sure the disabled-checked state greys out cleanly */
+input[type="checkbox"]:disabled:checked {
+    background-color: #A0AAB6 !important;
+    border-color: #A0AAB6 !important;
+}
+""" + CB14_END + "\n"
+
+
+def apply_14_check_tick():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(f">>> ERROR: Theme Template '{TEMPLATE}' not found."); return
+    _timestamp_backup_css("before_14_check_tick")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(
+        re.escape(CB14_BEGIN) + r".*?" + re.escape(CB14_END) + r"\n?",
+        "", current, flags=re.DOTALL,
+    ).rstrip()
+    new_css = current + "\n\n" + CB14_CSS
+    _save_css(new_css)
+    print("[done] Patch 14 check-tick applied. Hard-refresh (Ctrl+Shift+R).")
+
+
+def rollback_14_check_tick():
+    _timestamp_backup_css("before_ROLLBACK_14_check_tick")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    new_css = re.sub(
+        re.escape(CB14_BEGIN) + r".*?" + re.escape(CB14_END) + r"\n?",
+        "", current, flags=re.DOTALL,
+    ).rstrip() + "\n"
+    _save_css(new_css)
+    print("[done] Patch 14 rolled back.")
+
+
+# =====================================================
+# PATCH 17 — Submitted checkbox stays visibly checked
+# =====================================================
+CB17_BEGIN = "/* PT-PATCH:17-submitted-checkbox BEGIN */"
+CB17_END   = "/* PT-PATCH:17-submitted-checkbox END */"
+
+CB17_CSS = CB17_BEGIN + """
+/* When a doctype is submitted, Frappe adds disabled/readonly to inputs.
+   Keep the green fill + white tick clearly visible. */
+input[type="checkbox"]:disabled:checked,
+input[type="checkbox"][readonly]:checked,
+input[type="checkbox"].disabled:checked {
+    background-color: #3ECF57 !important;
+    border-color: #3ECF57 !important;
+    opacity: 0.9 !important;
+    cursor: not-allowed;
+}
+input[type="checkbox"]:disabled:checked::after,
+input[type="checkbox"][readonly]:checked::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 4px !important;
+    top: 0px !important;
+    width: 5px !important;
+    height: 10px !important;
+    border: solid #FFFFFF !important;
+    border-width: 0 2.5px 2.5px 0 !important;
+    transform: rotate(45deg) !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    pointer-events: none;
+}
+
+/* Unchecked submitted stays clearly empty with visible border */
+input[type="checkbox"]:disabled:not(:checked),
+input[type="checkbox"][readonly]:not(:checked) {
+    background: #EEF2F7 !important;
+    border-color: #A0AAB6 !important;
+    opacity: 0.9 !important;
+}
+:root[data-theme="dark"] input[type="checkbox"]:disabled:not(:checked),
+:root[data-theme="dark"] input[type="checkbox"][readonly]:not(:checked) {
+    background: #253753 !important;
+    border-color: #6B7280 !important;
+}
+""" + CB17_END + "\n"
+
+
+def apply_17_submitted_checkbox():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR: Theme Template not found."); return
+    _timestamp_backup_css("before_17_submitted_checkbox")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(
+        re.escape(CB17_BEGIN) + r".*?" + re.escape(CB17_END) + r"\n?",
+        "", current, flags=re.DOTALL,
+    ).rstrip()
+    new_css = current + "\n\n" + CB17_CSS
+    _save_css(new_css)
+    print("[done] Patch 17 applied. Hard-refresh with cache disabled.")
+
+
+def rollback_17_submitted_checkbox():
+    _timestamp_backup_css("before_ROLLBACK_17_submitted_checkbox")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    new_css = re.sub(
+        re.escape(CB17_BEGIN) + r".*?" + re.escape(CB17_END) + r"\n?",
+        "", current, flags=re.DOTALL,
+    ).rstrip() + "\n"
+    _save_css(new_css)
+    print("[done] Patch 17 rolled back.")
+
+
+# =====================================================
+# PATCH 18 — Submitted checkbox (Frappe's .disabled-selected)
+# =====================================================
+CB18_BEGIN = "/* PT-PATCH:18-disabled-selected BEGIN */"
+CB18_END   = "/* PT-PATCH:18-disabled-selected END */"
+
+CB18_CSS = CB18_BEGIN + """
+/* Frappe renders submitted checkboxes as:
+   <span class="disp-area"><input class="disabled-selected" disabled></span>
+   The 'disabled-selected' class means it IS checked. */
+
+input.disabled-selected[type="checkbox"] {
+    background-color: #3ECF57 !important;
+    border-color: #3ECF57 !important;
+    background-image: none !important;
+    opacity: 1 !important;
+    position: relative !important;
+}
+
+input.disabled-selected[type="checkbox"]::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 4px !important;
+    top: 0px !important;
+    width: 5px !important;
+    height: 10px !important;
+    border: solid #FFFFFF !important;
+    border-width: 0 2.5px 2.5px 0 !important;
+    transform: rotate(45deg) !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+}
+
+/* Submitted-but-unchecked (no 'disabled-selected' class, just 'disabled') */
+.disp-area input[type="checkbox"]:disabled:not(.disabled-selected) {
+    background: #EEF2F7 !important;
+    border-color: #A0AAB6 !important;
+    opacity: 1 !important;
+}
+:root[data-theme="dark"] .disp-area input[type="checkbox"]:disabled:not(.disabled-selected) {
+    background: #253753 !important;
+    border-color: #6B7280 !important;
+}
+""" + CB18_END + "\n"
+
+
+def apply_18_disabled_selected():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_18")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB18_BEGIN)+r".*?"+re.escape(CB18_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB18_CSS)
+    print("[done] Patch 18 applied.")
+
+
+def rollback_18_disabled_selected():
+    _timestamp_backup_css("before_ROLLBACK_18")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB18_BEGIN)+r".*?"+re.escape(CB18_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 18 rolled back.")
+
+
+# =====================================================
+# PATCH 19 — Connection badges (Payment/Reference/Returns tiles)
+# =====================================================
+CB19_BEGIN = "/* PT-PATCH:19-connection-badges BEGIN */"
+CB19_END   = "/* PT-PATCH:19-connection-badges END */"
+
+CB19_CSS = CB19_BEGIN + """
+/* Connection tiles under Payment/Reference/Returns/Subscription/Internal Transfers */
+.document-link-badge,
+.document-link .badge-link {
+    background: #F7F9FC !important;
+    border: 1px solid #E1E7EE !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    color: #17304D !important;
+}
+.document-link-badge:hover,
+.document-link .badge-link:hover {
+    background: #EEF2F7 !important;
+    border-color: #C7D0DB !important;
+}
+.document-link-badge a,
+.document-link-badge span,
+.document-link .badge-link a,
+.document-link .badge-link span {
+    color: #17304D !important;
+}
+.document-link .btn-open,
+.document-link-badge .btn-new {
+    color: #17304D !important;
+    background: transparent !important;
+}
+
+/* Section titles (Payment, Reference, Returns, etc.) */
+.form-links .form-link-title,
+.form-documents .transactions .col-md-4 > div:first-child {
+    color: #17304D !important;
+    font-weight: 600 !important;
+}
+
+/* DARK MODE */
+:root[data-theme="dark"] .document-link-badge,
+:root[data-theme="dark"] .document-link .badge-link {
+    background: #1E2A3E !important;
+    border-color: #3A4558 !important;
+    color: #E6EAF0 !important;
+}
+:root[data-theme="dark"] .document-link-badge:hover,
+:root[data-theme="dark"] .document-link .badge-link:hover {
+    background: #253753 !important;
+    border-color: #4A5568 !important;
+}
+:root[data-theme="dark"] .document-link-badge a,
+:root[data-theme="dark"] .document-link-badge span,
+:root[data-theme="dark"] .document-link .badge-link a,
+:root[data-theme="dark"] .document-link .badge-link span {
+    color: #E6EAF0 !important;
+}
+:root[data-theme="dark"] .document-link .btn-open,
+:root[data-theme="dark"] .document-link-badge .btn-new {
+    color: #E6EAF0 !important;
+}
+:root[data-theme="dark"] .form-links .form-link-title,
+:root[data-theme="dark"] .form-documents .transactions .col-md-4 > div:first-child {
+    color: #E6EAF0 !important;
+}
+""" + CB19_END + "\n"
+
+
+def apply_19_connection_badges():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_19")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB19_BEGIN)+r".*?"+re.escape(CB19_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB19_CSS)
+    print("[done] Patch 19 applied.")
+
+
+def rollback_19_connection_badges():
+    _timestamp_backup_css("before_ROLLBACK_19")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB19_BEGIN)+r".*?"+re.escape(CB19_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 19 rolled back.")
+
+
+# =====================================================
+# PATCH 20 — Connection badge wrapper cleanup
+# =====================================================
+CB20_BEGIN = "/* PT-PATCH:20-connection-wrapper BEGIN */"
+CB20_END   = "/* PT-PATCH:20-connection-wrapper END */"
+
+CB20_CSS = CB20_BEGIN + """
+/* Kill the outer wrapper's field-yellow bg — badge is the surface */
+.form-links .document-link,
+.transactions .document-link {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin-bottom: 8px !important;
+}
+
+/* Badge itself — proper card look, full width of its column */
+.document-link .document-link-badge {
+    background: #F7F9FC !important;
+    border: 1px solid #E1E7EE !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.document-link .badge-link,
+.document-link .document-link-badge a {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    color: #17304D !important;
+    font-weight: 500 !important;
+}
+.document-link .btn-new,
+.document-link .btn-open {
+    background: transparent !important;
+    border: 0 !important;
+    color: #5A6B80 !important;
+    padding: 0 !important;
+}
+
+/* DARK MODE */
+:root[data-theme="dark"] .document-link .document-link-badge {
+    background: #1E2A3E !important;
+    border-color: #3A4558 !important;
+}
+:root[data-theme="dark"] .document-link .badge-link,
+:root[data-theme="dark"] .document-link .document-link-badge a {
+    color: #E6EAF0 !important;
+}
+:root[data-theme="dark"] .document-link .btn-new,
+:root[data-theme="dark"] .document-link .btn-open {
+    color: #A0AAB6 !important;
+}
+""" + CB20_END + "\n"
+
+
+def apply_20_connection_wrapper():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_20")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB20_BEGIN)+r".*?"+re.escape(CB20_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB20_CSS)
+    print("[done] Patch 20 applied.")
+
+
+def rollback_20_connection_wrapper():
+    _timestamp_backup_css("before_ROLLBACK_20")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB20_BEGIN)+r".*?"+re.escape(CB20_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 20 rolled back.")
+
+
+# =====================================================
+# PATCH 21 — Page-head icon buttons (edit/print/menu icons)
+# =====================================================
+CB21_BEGIN = "/* PT-PATCH:21-pagehead-icons BEGIN */"
+CB21_END   = "/* PT-PATCH:21-pagehead-icons END */"
+
+CB21_CSS = CB21_BEGIN + """
+/* Force all icon SVGs inside page-head buttons to white */
+.page-head .icon-btn svg,
+.page-head .icon-btn use,
+.page-head button.icon-btn svg,
+.page-head button.icon-btn use,
+.page-head .menu-btn-group .btn svg,
+.page-head .menu-btn-group .btn use,
+.page-head .btn-default svg,
+.page-head .btn-default use,
+.page-head .form-viewers svg,
+.page-head .form-viewers use,
+.page-head .standard-actions .btn svg,
+.page-head .standard-actions .btn use,
+.page-head svg.icon,
+.page-head svg.icon-sm,
+.page-head svg.es-icon {
+    fill: #FFFFFF !important;
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+.page-head .icon-btn svg *,
+.page-head .menu-btn-group .btn svg *,
+.page-head svg.icon *,
+.page-head svg.icon-sm * {
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+/* Icon buttons themselves — visible pill background */
+.page-head .icon-btn,
+.page-head button.icon-btn,
+.page-head .menu-btn-group .btn.icon-btn {
+    background: rgba(255,255,255,0.16) !important;
+    border: 1px solid rgba(255,255,255,0.24) !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+.page-head .icon-btn:hover,
+.page-head .menu-btn-group .btn.icon-btn:hover {
+    background: rgba(255,255,255,0.28) !important;
+    border-color: rgba(255,255,255,0.40) !important;
+}
+""" + CB21_END + "\n"
+
+
+def apply_21_pagehead_icons():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_21")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB21_BEGIN)+r".*?"+re.escape(CB21_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB21_CSS)
+    print("[done] Patch 21 applied.")
+
+
+def rollback_21_pagehead_icons():
+    _timestamp_backup_css("before_ROLLBACK_21")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB21_BEGIN)+r".*?"+re.escape(CB21_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 21 rolled back.")
+
+
+# =====================================================
+# PATCH 22 — Prev/Next document navigation buttons
+# =====================================================
+CB22_BEGIN = "/* PT-PATCH:22-prev-next-doc BEGIN */"
+CB22_END   = "/* PT-PATCH:22-prev-next-doc END */"
+
+CB22_CSS = CB22_BEGIN + """
+/* Prev/Next document buttons — white icons on translucent pill */
+.page-head .prev-doc,
+.page-head .next-doc,
+.page-head .page-icon-group .btn,
+.page-head .page-icon-group button {
+    background: rgba(255,255,255,0.16) !important;
+    border: 1px solid rgba(255,255,255,0.24) !important;
+    border-radius: 999px !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+.page-head .prev-doc:hover,
+.page-head .next-doc:hover,
+.page-head .page-icon-group .btn:hover {
+    background: rgba(255,255,255,0.28) !important;
+    border-color: rgba(255,255,255,0.40) !important;
+}
+.page-head .prev-doc svg,
+.page-head .next-doc svg,
+.page-head .prev-doc use,
+.page-head .next-doc use,
+.page-head .page-icon-group svg,
+.page-head .page-icon-group use {
+    fill: #FFFFFF !important;
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+.page-head .prev-doc svg *,
+.page-head .next-doc svg *,
+.page-head .page-icon-group svg * {
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+""" + CB22_END + "\n"
+
+
+def apply_22_prev_next_doc():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_22")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB22_BEGIN)+r".*?"+re.escape(CB22_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB22_CSS)
+    print("[done] Patch 22 applied.")
+
+
+def rollback_22_prev_next_doc():
+    _timestamp_backup_css("before_ROLLBACK_22")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB22_BEGIN)+r".*?"+re.escape(CB22_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 22 rolled back.")
+
+
+# =====================================================
+# PATCH 23 — Prev/Next: kill white bg from Patch 05
+# =====================================================
+CB23_BEGIN = "/* PT-PATCH:23-prev-next-force BEGIN */"
+CB23_END   = "/* PT-PATCH:23-prev-next-force END */"
+
+CB23_CSS = CB23_BEGIN + """
+/* Higher specificity: chain button + class to beat Patch 05 */
+.page-head button.prev-doc,
+.page-head button.next-doc,
+.page-head .page-icon-group button.btn,
+.page-head span.page-icon-group button {
+    background: rgba(255,255,255,0.16) !important;
+    background-color: rgba(255,255,255,0.16) !important;
+    background-image: none !important;
+    border: 1px solid rgba(255,255,255,0.24) !important;
+    color: #FFFFFF !important;
+}
+.page-head button.prev-doc:hover,
+.page-head button.next-doc:hover,
+.page-head .page-icon-group button.btn:hover {
+    background: rgba(255,255,255,0.28) !important;
+    background-color: rgba(255,255,255,0.28) !important;
+}
+.page-head button.prev-doc svg,
+.page-head button.next-doc svg,
+.page-head .page-icon-group svg,
+.page-head button.prev-doc use,
+.page-head button.next-doc use,
+.page-head .page-icon-group use {
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+""" + CB23_END + "\n"
+
+
+def apply_23_prev_next_force():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_23")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB23_BEGIN)+r".*?"+re.escape(CB23_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB23_CSS)
+    print("[done] Patch 23 applied.")
+
+
+def rollback_23_prev_next_force():
+    _timestamp_backup_css("before_ROLLBACK_23")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB23_BEGIN)+r".*?"+re.escape(CB23_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 23 rolled back.")
+
+
+# =====================================================
+# PATCH 24 — Force disabled-selected green (beats Patch 17 order)
+# =====================================================
+CB24_BEGIN = "/* PT-PATCH:24-disabled-selected-force BEGIN */"
+CB24_END   = "/* PT-PATCH:24-disabled-selected-force END */"
+
+CB24_CSS = CB24_BEGIN + """
+/* Higher specificity + placed last: beats Patch 17's :disabled:not(:checked).
+   The .disabled-selected class means Frappe rendered it as CHECKED. */
+input[type="checkbox"].disabled-selected,
+input[type="checkbox"].disabled-selected:disabled,
+input[type="checkbox"].disabled-selected[disabled] {
+    background: #3ECF57 !important;
+    background-color: #3ECF57 !important;
+    background-image: none !important;
+    border: 2px solid #3ECF57 !important;
+    border-color: #3ECF57 !important;
+    opacity: 1 !important;
+    position: relative !important;
+}
+
+input[type="checkbox"].disabled-selected::after,
+input[type="checkbox"].disabled-selected:disabled::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 4px !important;
+    top: 0px !important;
+    width: 5px !important;
+    height: 10px !important;
+    border: solid #FFFFFF !important;
+    border-width: 0 2.5px 2.5px 0 !important;
+    transform: rotate(45deg) !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    pointer-events: none;
+    opacity: 1 !important;
+}
+""" + CB24_END + "\n"
+
+
+def apply_24_disabled_selected_force():
+    if not frappe.db.exists("Theme Template", TEMPLATE):
+        print(">>> ERROR"); return
+    _timestamp_backup_css("before_24")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    current = re.sub(re.escape(CB24_BEGIN)+r".*?"+re.escape(CB24_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()
+    _save_css(current + "\n\n" + CB24_CSS)
+    print("[done] Patch 24 applied.")
+
+
+def rollback_24_disabled_selected_force():
+    _timestamp_backup_css("before_ROLLBACK_24")
+    current = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    _save_css(re.sub(re.escape(CB24_BEGIN)+r".*?"+re.escape(CB24_END)+r"\n?", "", current, flags=re.DOTALL).rstrip()+"\n")
+    print("[done] Patch 24 rolled back.")
+
+
+# =====================================================
+# BAKE — Export current site's fully-patched CSS into
+#        the app's Theme Template fixture file, so any
+#        future `bench install-app portal_theme` on any
+#        site gets the exact same look natively.
+# =====================================================
+def bake_into_app_source():
+    """Dump the current live CSS into the app's fixture file."""
+    import json, os as _os
+
+    current_css = frappe.db.get_value("Theme Template", TEMPLATE, "theme_template") or ""
+    if not current_css.strip():
+        print(">>> ERROR: no CSS in DB to bake."); return
+
+    fixture_dir = _os.path.join(APP_ROOT, "fixtures")
+    _os.makedirs(fixture_dir, exist_ok=True)
+    fixture_path = _os.path.join(fixture_dir, "theme_template.json")
+
+    fixture = [{
+        "doctype": "Theme Template",
+        "name": TEMPLATE,
+        "theme_template": current_css,
+    }]
+    with open(fixture_path, "w") as f:
+        json.dump(fixture, f, indent=2, ensure_ascii=False)
+    print(f"[baked] {fixture_path}  ({len(current_css)} bytes of CSS)")
+
+    hooks_path = _os.path.join(APP_ROOT, "hooks.py")
+    with open(hooks_path) as f: hooks = f.read()
+    if 'fixtures = ["Theme Template"]' not in hooks and 'fixtures=[' not in hooks:
+        with open(hooks_path, "a") as f:
+            f.write('\n\nfixtures = ["Theme Template"]\n')
+        print("[hooks.py] added fixtures = [\"Theme Template\"]")
+    else:
+        print("[hooks.py] fixtures already declared")
+
+    print("")
+    print("[done] App source now contains today's exact theme.")
+    print("       Commit + push. On any new server:")
+    print("         bench get-app <your-repo>")
+    print("         bench --site NEW_SITE install-app portal_theme")
+    print("       will give the site the exact same look automatically.")
+
+
+# =====================================================
+# PATCH 25 — Login terms falls back to Website Settings address
+# =====================================================
+def apply_25_terms_from_address():
+    """Update login.py so terms_text falls back to Website Settings.address
+       when Portal Theme Setting.login_terms_text is empty."""
+    if not os.path.exists(LOGIN_PY_PATH):
+        print(f">>> {LOGIN_PY_PATH} not found"); return
+
+    _timestamp_backup_file(LOGIN_PY_PATH, "before_25_login.py")
+
+    with open(LOGIN_PY_PATH, "r") as f:
+        py = f.read()
+
+    # Ensure website_address variable exists before terms_default line
+    if "website_address = _get_website" not in py:
+        py = py.replace(
+            'website_copyright = _get_website("copyright")',
+            'website_copyright = _get_website("copyright")\n    website_address  = _get_website("address")'
+        )
+
+    # Replace terms_default line — fall back to address, not copyright
+    py = re.sub(
+        r'terms_default\s*=\s*[^\n]+',
+        'terms_default = website_address  # Patch 25: from Website Settings.address',
+        py,
+    )
+
+    with open(LOGIN_PY_PATH, "w") as f:
+        f.write(py)
+    print(f"[write] {LOGIN_PY_PATH}")
+
+    frappe.db.commit()
+    frappe.clear_cache()
+    print("[done] Patch 25 applied.")
+    print("       Fill /app/website-settings → Address field with your terms text.")
+    print("       Then: bench restart, hard-refresh /login.")
+
+
+def rollback_25_terms_from_address():
+    if not os.path.exists(LOGIN_PY_PATH): return
+    _timestamp_backup_file(LOGIN_PY_PATH, "before_ROLLBACK_25_login.py")
+    with open(LOGIN_PY_PATH, "r") as f:
+        py = f.read()
+    py = re.sub(
+        r'terms_default\s*=\s*[^\n]+',
+        'terms_default = website_copyright or f"© {year} {app_name}. All rights reserved."',
+        py,
+    )
+    with open(LOGIN_PY_PATH, "w") as f: f.write(py)
+    frappe.db.commit(); frappe.clear_cache()
+    print("[done] Patch 25 rolled back.")

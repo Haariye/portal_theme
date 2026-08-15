@@ -45,12 +45,13 @@ def _build_brand_login(pts, app_name):
     brand_navy  = active.get("secondary") or "#17304D"
     year = frappe.utils.now_datetime().year
     website_copyright = _get_website("copyright")
+    website_address  = _get_website("address")
     website_powered   = _get_website("footer_powered")
     website_description = _get_website("description") or _get_website("meta_description")
 
     subtitle_default = _get_default_company_name() or ""
     copyright_default = f"© {year} {website_copyright}" if website_copyright else ""  # Patch 09: auto © and year
-    terms_default = website_copyright or f"© {year} {app_name}. All rights reserved."
+    terms_default = website_address  # Patch 25: from Website Settings.address
     powered_default = website_powered or ""
 
     return {
