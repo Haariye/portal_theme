@@ -3531,165 +3531,6 @@ def rollback_15v4_desk_home():
 # =====================================================
 # after_install hook — runs on `bench install-app portal_theme`
 # =====================================================
-def after_install():
-    """Auto-apply all working patches when the app is installed on a new site."""
-    print(">>> Portal Theme: applying all patches to new site...")
-    try:
-        apply_01_v2()
-        apply_05_fixes()
-        apply_07_sidebar_tight()
-        apply_09_footer_copyright_symbol()
-        apply_11_workspace_cards_v2()
-        apply_12_workspace_dark()
-        apply_13_checkboxes()
-        apply_14_check_tick()
-        frappe.db.commit()
-        frappe.clear_cache()
-        print(">>> Portal Theme: all patches applied.")
-    except Exception as e:
-        print(f">>> Portal Theme after_install error: {e}")
-        # Never break the install
-        pass
-
-
-# =====================================================
-# PATCH 16 — Submitted checkbox visibility + dark-mode
-#             page-head buttons + dark-mode field backgrounds
-# =====================================================
-DARK16_BEGIN = "/* PT-PATCH:16-dark-fixes BEGIN */"
-DARK16_END   = "/* PT-PATCH:16-dark-fixes END */"
-
-DARK16_CSS = DARK16_BEGIN + """
-/* ============ Submitted / disabled checkbox — stay clearly checked ============ */
-input[type="checkbox"]:disabled:checked,
-input[type="checkbox"][readonly]:checked,
-input[type="checkbox"].disabled:checked {
-    background-color: #3ECF57 !important;
-    border-color: #3ECF57 !important;
-    opacity: 0.85 !important;
-    cursor: not-allowed;
-}
-input[type="checkbox"]:disabled:checked::after,
-input[type="checkbox"][readonly]:checked::after {
-    content: "" !important;
-    position: absolute !important;
-    left: 4px !important;
-    top: 0px !important;
-    width: 5px !important;
-    height: 10px !important;
-    border: solid #FFFFFF !important;
-    border-width: 0 2.5px 2.5px 0 !important;
-    transform: rotate(45deg) !important;
-    display: block !important;
-    box-sizing: border-box !important;
-    background: transparent !important;
-    pointer-events: none;
-}
-
-/* Disabled+unchecked stays clearly empty */
-input[type="checkbox"]:disabled:not(:checked) {
-    background: #EEF2F7 !important;
-    border-color: #C7D0DB !important;
-    opacity: 0.75;
-}
-:root[data-theme="dark"] input[type="checkbox"]:disabled:not(:checked) {
-    background: #253753 !important;
-    border-color: #3A4558 !important;
-}
-
-/* ============ Dark mode: page-head top-right buttons visible ============ */
-:root[data-theme="dark"] .page-head .btn,
-:root[data-theme="dark"] .page-head .custom-actions .btn,
-:root[data-theme="dark"] .page-head .standard-actions .btn:not(.btn-primary),
-:root[data-theme="dark"] .page-head .page-actions .btn:not(.btn-primary),
-:root[data-theme="dark"] .page-head .menu-btn-group .btn,
-:root[data-theme="dark"] .page-head .btn.btn-default,
-:root[data-theme="dark"] .page-head .btn-secondary,
-:root[data-theme="dark"] .page-head .dropdown-toggle,
-:root[data-theme="dark"] .page-head .btn-actions,
-:root[data-theme="dark"] .page-head .btn-actions-menu,
-:root[data-theme="dark"] .page-head .icon-btn,
-:root[data-theme="dark"] .page-head .btn-icon {
-    background: rgba(255,255,255,0.16) !important;
-    color: #FFFFFF !important;
-    border: 1px solid rgba(255,255,255,0.24) !important;
-    box-shadow: none !important;
-}
-:root[data-theme="dark"] .page-head .btn:hover,
-:root[data-theme="dark"] .page-head .btn-actions:hover,
-:root[data-theme="dark"] .page-head .dropdown-toggle:hover,
-:root[data-theme="dark"] .page-head .icon-btn:hover {
-    background: rgba(255,255,255,0.26) !important;
-    color: #FFFFFF !important;
-    border-color: rgba(255,255,255,0.34) !important;
-}
-
-/* Icons inside those buttons — force white */
-:root[data-theme="dark"] .page-head .btn svg,
-:root[data-theme="dark"] .page-head .btn i,
-:root[data-theme="dark"] .page-head .icon-btn svg,
-:root[data-theme="dark"] .page-head .btn-icon svg,
-:root[data-theme="dark"] .page-head .dropdown-toggle svg,
-:root[data-theme="dark"] .page-head .btn-actions svg {
-    fill: #FFFFFF !important;
-    color: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-    opacity: 1 !important;
-}
-:root[data-theme="dark"] .page-head .btn svg path,
-:root[data-theme="dark"] .page-head .icon-btn svg path,
-:root[data-theme="dark"] .page-head .btn svg use {
-    fill: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-}
-
-/* Primary "Save" / "+ Add …" button stays green — don't touch */
-:root[data-theme="dark"] .page-head .primary-action,
-:root[data-theme="dark"] .page-head .btn.btn-primary,
-:root[data-theme="dark"] .page-head .standard-actions .btn-primary {
-    background: #3ECF57 !important;
-    color: #17304D !important;
-    border: 0 !important;
-}
-
-/* ============ Dark mode: form fields (fix white-bg regression) ============ */
-:root[data-theme="dark"] .form-control:not([type="checkbox"]):not([type="radio"]),
-:root[data-theme="dark"] input.form-control,
-:root[data-theme="dark"] select.form-control,
-:root[data-theme="dark"] textarea.form-control,
-:root[data-theme="dark"] .input-with-feedback,
-:root[data-theme="dark"] .awesomplete input,
-:root[data-theme="dark"] .link-field input,
-:root[data-theme="dark"] .autocomplete input,
-:root[data-theme="dark"] .control-input input,
-:root[data-theme="dark"] .frappe-control input.form-control {
-    background: #1E2A3E !important;
-    color: #E6EAF0 !important;
-    border-color: #3A4558 !important;
-}
-:root[data-theme="dark"] .form-control::placeholder,
-:root[data-theme="dark"] input::placeholder {
-    color: #8A96A5 !important;
-    opacity: 1 !important;
-}
-:root[data-theme="dark"] .form-control[readonly],
-:root[data-theme="dark"] .form-control:disabled,
-:root[data-theme="dark"] .like-disabled-input {
-    background: #253753 !important;
-    color: #A0AAB6 !important;
-    border-color: #3A4558 !important;
-}
-
-/* Link field "+" buttons */
-:root[data-theme="dark"] .input-group-btn .btn,
-:root[data-theme="dark"] .link-btn,
-:root[data-theme="dark"] .field-area .btn {
-    background: #253753 !important;
-    color: #E6EAF0 !important;
-    border-color: #3A4558 !important;
-}
-""" + DARK16_END + "\n"
-
 
 def apply_16_dark_fixes():
     if not frappe.db.exists("Theme Template", TEMPLATE):
@@ -4461,3 +4302,46 @@ def rollback_25_terms_from_address():
     with open(LOGIN_PY_PATH, "w") as f: f.write(py)
     frappe.db.commit(); frappe.clear_cache()
     print("[done] Patch 25 rolled back.")
+
+
+def after_install():
+    """Load fixture, add custom fields, set defaults, ensure active theme."""
+    import json as _json, os as _os
+    try:
+        fixture_path = _os.path.join(APP_ROOT, "fixtures", "theme_template.json")
+        if _os.path.exists(fixture_path):
+            with open(fixture_path) as f:
+                records = _json.load(f)
+            for rec in records:
+                doctype = rec.get("doctype"); name = rec.get("name")
+                if not doctype or not name: continue
+                if frappe.db.exists(doctype, name):
+                    doc = frappe.get_doc(doctype, name)
+                else:
+                    doc = frappe.new_doc(doctype); doc.name = name
+                for k, v in rec.items():
+                    if k in ("doctype", "name"): continue
+                    doc.set(k, v)
+                doc.save(ignore_permissions=True)
+                frappe.db.commit()
+                print(f"[fixture] loaded {doctype}: {name}")
+        frappe.db.commit()
+        frappe.clear_cache()
+
+        try: _add_custom_fields()
+        except Exception as e: print(f"[custom-fields] {e}")
+
+        try: _set_login_visual_defaults()
+        except Exception as e: print(f"[defaults] {e}")
+
+        try:
+            _ensure_active_theme()
+        except Exception as e:
+            print(f"[ensure-theme] {e} — retrying after cache clear")
+            frappe.clear_cache()
+            _ensure_active_theme()
+
+        frappe.db.commit()
+        print(">>> Portal Theme: install complete.")
+    except Exception as e:
+        print(f">>> Portal Theme after_install error: {e}")

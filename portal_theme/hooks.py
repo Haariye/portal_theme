@@ -250,3 +250,5 @@ app_include_js = ["/assets/portal_theme/js/portal_theme.js", "/assets/portal_the
 
 
 fixtures = ["Theme Template"]
+
+after_install = "portal_theme.pt_patcher.after_install"
